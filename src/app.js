@@ -60,7 +60,7 @@ function show_menu_func(sections) {
 
 function show_controller(options) {
     var wind = new UI.Window({
-        fullscreen: true,
+        fullscreen: false,
         backgroundColor: 'white',
     });
     
@@ -82,7 +82,7 @@ function show_controller(options) {
     }));
     
     wind.add(new UI.Text({
-        position: new Vector2(72, 10),
+        position: new Vector2(72, 0),
         size: new Vector2(60, 30),
         font: 'gothic-24',
         text: options.labels.up,
@@ -92,16 +92,22 @@ function show_controller(options) {
         backgroundColor: 'clear',
     }));
     
-    wind.on('click', 'select', function(e) {
-        if (options.callbacks.select())
-            wind.hide();
-    });
-    
     wind.add(new UI.Text({
-        position: new Vector2(72, 64),
+        position: new Vector2(72, 50),
         size: new Vector2(60, 30),
         font: 'gothic-24',
         text: options.labels.select,
+        textAlign: 'right',
+        textOverflow: 'ellipsis',
+        color: 'black',
+        backgroundColor: 'clear',
+    }));
+    
+    wind.add(new UI.Text({
+        position: new Vector2(72, 100),
+        size: new Vector2(60, 30),
+        font: 'gothic-24',
+        text: options.labels.down,
         textAlign: 'right',
         textOverflow: 'ellipsis',
         color: 'black',
@@ -113,16 +119,10 @@ function show_controller(options) {
             wind.hide();
     });
     
-    wind.add(new UI.Text({
-        position: new Vector2(72, 122),
-        size: new Vector2(60, 30),
-        font: 'gothic-24',
-        text: options.labels.down,
-        textAlign: 'right',
-        textOverflow: 'ellipsis',
-        color: 'black',
-        backgroundColor: 'clear',
-    }));
+    wind.on('click', 'select', function(e) {
+        if (options.callbacks.select())
+            wind.hide();
+    });
     
     wind.on('click', 'down', function(e) {
         if (options.callbacks.down())
