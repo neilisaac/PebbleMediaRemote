@@ -12,8 +12,8 @@ function actuate(cmd) {
     ajax(
         {
             url: 'http://requestb.in/16rx8j41',
-            data: cmd,
-            type: 'string',
+            data: {command: cmd},
+            type: 'json',
             method: 'put',
         },
         function(data, status, request) {
