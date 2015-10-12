@@ -13,7 +13,8 @@ function actuate(cmd) {
         {
             url: 'http://requestb.in/16rx8j41',
             data: cmd,
-            type: 'json'
+            type: 'string',
+            method: 'put',
         },
         function(data, status, request) {
             console.log('response: ' + data);
@@ -63,60 +64,69 @@ function show_controller(options) {
         backgroundColor: 'white',
     });
     
-    wind.add(new UI.Text({
+    wind.add(new UI.Rect({
         position: new Vector2(0, 0),
-        size: new Vector2(168, 72),
-        font: 'gothic-48',
-        text: options.title,
-        textAlign: 'left',
-        textOverflow: 'wrap',
-        color: 'black',
+        size: new Vector2(80, 168),
         backgroundColor: 'orange',
     }));
     
     wind.add(new UI.Text({
-        position: new Vector2(72, 0),
-        size: new Vector2(72, 30),
+        position: new Vector2(10, 0),
+        size: new Vector2(70, 168),
+        font: 'gothic-28',
+        text: options.title,
+        textAlign: 'left',
+        textOverflow: 'wrap',
+        color: 'black',
+        backgroundColor: 'clear',
+    }));
+    
+    wind.add(new UI.Text({
+        position: new Vector2(72, 10),
+        size: new Vector2(60, 30),
         font: 'gothic-24',
         text: options.labels.up,
         textAlign: 'right',
         textOverflow: 'ellipsis',
         color: 'black',
-        backgroundColor: 'white',
+        backgroundColor: 'clear',
     }));
     
     wind.on('click', 'select', function(e) {
-        options.callbacks.select();
+        if (options.callbacks.select())
+            wind.hide();
     });
     
     wind.add(new UI.Text({
-        position: new Vector2(72, 65),
-        size: new Vector2(72, 30),
+        position: new Vector2(72, 64),
+        size: new Vector2(60, 30),
         font: 'gothic-24',
         text: options.labels.select,
         textAlign: 'right',
         textOverflow: 'ellipsis',
         color: 'black',
-        backgroundColor: 'white',
+        backgroundColor: 'clear',
     }));
     
     wind.on('click', 'up', function(e) {
-        options.callbacks.up();
+        if (options.callbacks.up())
+            wind.hide();
     });
     
     wind.add(new UI.Text({
-        position: new Vector2(72, 138),
-        size: new Vector2(72, 30),
+        position: new Vector2(72, 122),
+        size: new Vector2(60, 30),
         font: 'gothic-24',
         text: options.labels.down,
         textAlign: 'right',
         textOverflow: 'ellipsis',
         color: 'black',
-        backgroundColor: 'white',
+        backgroundColor: 'clear',
     }));
     
     wind.on('click', 'down', function(e) {
-        options.callbacks.down();
+        if (options.callbacks.down())
+            wind.hide();
     });
     
     wind.show();
@@ -154,7 +164,7 @@ show_menu([
             {title: "On", callback: actuate_func("preamp/on", false)},
             {title: "Off", callback: actuate_func("preamp/off", false)},
             {title: "Volume", callback: show_controller_func({
-                title: "Pre-amplifier volume",
+                title: "Pre-amp volume",
                 labels: {
                     up: "Up",
                     down: "Down",
@@ -170,7 +180,7 @@ show_menu([
                 title: "Pre-amplifier input",
                 items: [
                     {title: "Opt 1: TV", callback: actuate_func("preamp/opt1", true)},
-                    {title: "Opt 2: Chromecase", callback: actuate_func("preamp/opt2", true)},
+                    {title: "Opt 2: Chromecast", callback: actuate_func("preamp/opt2", true)},
                     {title: "USB: Computer", callback: actuate_func("preamp/usb", true)},
                     {title: "Coaxial 1", callback: actuate_func("preamp/coaxial1", true)},
                     {title: "Coaxial 2", callback: actuate_func("preamp/coaxial2", true)},
