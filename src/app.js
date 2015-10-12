@@ -11,16 +11,13 @@ function actuate(cmd) {
     console.log("actuating " + cmd);
     ajax(
         {
-            url: 'http://omega-078b.local:5000/remote',
-            data: {command: cmd},
-            type: 'json',
-            method: 'put',
+            url: 'http://192.168.0.124:5000/' + cmd
         },
         function(data, status, request) {
             console.log('response: ' + data);
         },
         function(error, status, request) {
-            console.log('error: ' + error);
+            console.log('status: ' + status + ' error: ' + error + ' request: ' + request);
         }
     );
 }
