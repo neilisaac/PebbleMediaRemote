@@ -11,7 +11,7 @@ function actuate(cmd) {
     console.log("actuating " + cmd);
     ajax(
         {
-            url: 'http://requestb.in/16rx8j41',
+            url: 'http://omega-078b.local:5000/remote',
             data: {command: cmd},
             type: 'json',
             method: 'put',
@@ -161,8 +161,8 @@ show_menu([
     {
         title: 'Pre-amplifier',
         items: [
-            {title: "On", callback: actuate_func("preamp/on", false)},
-            {title: "Off", callback: actuate_func("preamp/off", false)},
+            {title: "Power on", callback: actuate_func("preamp/on", false)},
+            {title: "Power off", callback: actuate_func("preamp/off", false)},
             {title: "Volume", callback: show_controller_func({
                 title: "Pre-amp volume",
                 labels: {
