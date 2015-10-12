@@ -3,8 +3,7 @@
 import subprocess
 import sys
 import time
-
-from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
+from flask import Flask
 
 
 IR_PIN = 13
@@ -12,12 +11,10 @@ HTTP_PORT = 5000
 
 
 def set_led(color):
-    print 'calling expled', color
     subprocess.call(['/usr/bin/expled', color])
 
 
 def fast_gpio(*args):
-    print 'calling fast-gpio', args
     subprocess.call(['/usr/sbin/fast-gpio'] + list(map(str, args)))
 
 
@@ -37,11 +34,9 @@ def send_nec(code):
 
     for bit in '{:020b}'.format(int(code, 16)):
         if bit == '0':
-            print 'sending 0'
             pulse(0.0005625)
             time.sleep(0.0005625)
         else:
-            print 'sending 1'
             pulse(0.0005625)
             time.sleep(0.0016875)
 
@@ -58,11 +53,9 @@ def send_samsung(code):
 
     for bit in '{:020b}'.format(int(code, 16)):
         if bit == '0':
-            print 'sending 0'
             pulse(0.000590)
             time.sleep(0.000590)
         else:
-            print 'sending 1'
             pulse(0.000590)
             time.sleep(0.00169)
 
@@ -88,33 +81,18 @@ def send(command):
     return 'OK'
 
 
-class Handler(BaseHTTPRequestHandler):
-    def do_GET(self):
-        body = self.rfile.read()
-        try:
-            command = "/".join(self.path.split("/")[-2:])
-            result = send(command)
-        except Exception as ex:
-            result = str(ex)
-
-        self.send_response(200 if result == 'OK' else 500)
-        self.send_header('Content-type', 'text/html')
-        self.end_headers()
-        self.wfile.write(result)
-        return
+app = Flask(__name__)
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def handle_command(path):
+    command = path.lstrip('/')
+    return send(command)
 
 
 def main():
     set_led('0x00ff00')
     fast_gpio('set-output', IR_PIN)
-
-    print 'starting http server on port ' , HTTP_PORT
-    server = HTTPServer(('', HTTP_PORT), Handler)
-    try:
-    	server.serve_forever()
-    except KeyboardInterrupt:
-    	server.socket.close()
-        sys.exit(0)
+    app.run(host='0.0.0.0', debug=False)
 
 
 CALLBACKS = dict(tv=send_samsung, preamp=send_nec)
