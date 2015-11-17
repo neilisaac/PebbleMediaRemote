@@ -1,66 +1,11 @@
 #!/usr/bin/env python
 
-import subprocess
 import sys
-import time
 from flask import Flask
 
 
-IR_PIN = 13
 HTTP_PORT = 5000
-
-
-def set_led(color):
-    subprocess.call(['/usr/bin/expled', color])
-
-
-def fast_gpio(*args):
-    subprocess.call(['/usr/sbin/fast-gpio'] + list(map(str, args)))
-
-
-def pulse(seconds):
-    fast_gpio('pwm', 37900, IR_PIN)
-    time.sleep(seconds)
-    fast_gpio('set', IR_PIN, 0)
-
-
-def send_nec(code):
-    # based on http://techdocs.altium.com/display/FPGA/NEC+Infrared+Transmission+Protocol
-
-    print 'sending', code
-
-    pulse(0.009)  # 9ms leading burst
-    time.sleep(0.0054)  # 4.5ms space
-
-    for bit in '{:020b}'.format(int(code, 16)):
-        if bit == '0':
-            pulse(0.0005625)
-            time.sleep(0.0005625)
-        else:
-            pulse(0.0005625)
-            time.sleep(0.0016875)
-
-    pulse(0.0005625)  # 562.5us end of transmission
-
-
-def send_samsung(code):
-    # based on http://rusticengineering.com/2011/02/09/infrared-room-control-with-samsung-ir-protocol/
-
-    print 'sending', code
-
-    pulse(0.0045)  # 4.5ms on
-    time.sleep(0.0045)  # 4.5ms off
-
-    for bit in '{:020b}'.format(int(code, 16)):
-        if bit == '0':
-            pulse(0.000590)
-            time.sleep(0.000590)
-        else:
-            pulse(0.000590)
-            time.sleep(0.00169)
-
-    pulse(0.000590)
-    time.sleep(0.000590)
+SERIAL_PORT = '/dev/ttyACM0'
 
 
 def send(command):
@@ -76,9 +21,18 @@ def send(command):
     if cmd not in CODES[component]:
         return 'unknown command: ' + cmd
 
+    mode = MODES[component]
     code = CODES[component][cmd]
-    CALLBACKS[component](code)
-    return 'OK'
+
+    f = open(SERIAL_PORT, 'wb')
+    f.write('{}\n{}\n'.format(mode, code))
+    answer = ''
+    for line in f:
+        if line.strip() == 'end':
+            break
+        answer += line + '\n'
+    f.close()
+    return answer
 
 
 app = Flask(__name__)
@@ -90,12 +44,13 @@ def handle_command(path):
 
 
 def main():
-    set_led('0x00ff00')
-    fast_gpio('set-output', IR_PIN)
-    app.run(host='0.0.0.0', debug=False)
+    app.run(host='0.0.0.0', debug=True)
 
 
-CALLBACKS = dict(tv=send_samsung, preamp=send_nec)
+MODES = {
+    'tv':     'samsuung',
+    'preamp': 'rc5',
+}
 
 
 CODES = {
