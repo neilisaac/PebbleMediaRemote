@@ -11,7 +11,7 @@ function actuate(cmd) {
     console.log("actuating " + cmd);
     ajax(
         {
-            url: 'http://192.168.0.124:5000/' + cmd
+            url: 'http://raspberrypi.local:5000/' + cmd
         },
         function(data, status, request) {
             console.log('response: ' + data);
