@@ -33,6 +33,10 @@
     },
     "sdkVersion": "3",
     "shortName": "Media Remote",
+    "targetPlatforms": [
+        "aplite",
+        "basalt"
+    ],
     "uuid": "3b72f05a-a869-44fa-b07e-c477e57ae430",
     "versionCode": 1,
     "versionLabel": "1.0",
